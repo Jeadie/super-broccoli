@@ -235,6 +235,7 @@ def vectorized_result(j):
     return e
 if __name__ == "__main__":
     training_data, validation_data, test_data = load_data_wrapper()
-    ann = Network([784, 30,10])
-    ann.SGD(training_data, 30, 10, 3.0)
-    print ("Network got: {0} / {1}".format( ann.evaluate(test_data), 10000))
+    ann = Network([784, 100, 100, 100, 50, 10])
+    ann.SGD(training_data, 30, 10, 1.0)
+    print("Got {0} / 10000".format(ann.evaluate(test_data)))
+
