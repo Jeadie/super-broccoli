@@ -1,6 +1,6 @@
 #include <stdio.h> 
-#include <gsl/matrix/gsl_matrix.h>
-#include <gsl/rng/gsl_rng.h> 
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_rng.h> 
 #include <iostream> 
 
 class Network { 
@@ -50,23 +50,22 @@ class Network {
 	gsl_rng_free(rng); 
 	}
 
-	~Network () 
+	/**~Network () 
 	{
 
-	}
+	}*/
 	void print_biases(); 
 
 };
 
-void Network:: print_biases(){
+void Network::print_biases(){
 
-	std::cout << num_layers; 
-
+	std::cout << num_layers << "\n"; 
 };
 
 int main(int argc, char *argv[]) {
 	int layers[3] = {5, 10, 1}; 
-
+	
 	Network net = Network(layers, 3); 
 	net.print_biases(); 
 		
