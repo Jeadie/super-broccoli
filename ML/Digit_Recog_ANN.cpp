@@ -5,34 +5,30 @@
 
 class Network { 
 
-	protected: 
+	public: 
 	int num_layers; 
 	int* sizes; 
 	gsl_vector* biases; 
 	gsl_matrix*  weights;
 	
 
-	public:
 	Network (int *node_layers, int num_layers) 
 	{
-	num_layers = num_layers; 
-	sizes = node_layers; 
-	biases = (gsl_vector*) malloc((num_layers - 1) * sizeof(gsl_vector));
-	weights = (gsl_matrix*) malloc((num_layers - 1) * sizeof(gsl_matrix)); 
- // self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
- //        self.weights = [np.random.randn(y, x)
- //                       for x, y in zip(sizes[:-1], sizes[1:])]
+	this->num_layers = num_layers; 
+	this->sizes = node_layers; 
+	this->biases = (gsl_vector*) malloc((num_layers - 1) * sizeof(gsl_vector));
+	this->weights = (gsl_matrix*) malloc((num_layers - 1) * sizeof(gsl_matrix)); 
 
-	gsl_rng * rng = gsl_rng_alloc(gsl_rng_rand); 
+	gsl_rng *rng = gsl_rng_alloc(gsl_rng_rand); 
 	gsl_rng_set(rng, 8080); 
 	// Instantiate bias vectors
 	for (int i = 1; i < num_layers; i++) {
 		int nodes = *(sizes + i); 
 		gsl_vector *bias_layer = gsl_vector_alloc(nodes); 
-		for (int j = 0; i < nodes; i++) {
+		for (int j = 0; j < nodes; j++) {
 			gsl_vector_set(bias_layer, j, gsl_rng_uniform_pos(rng)); 
 		}
-		*(biases + i) = *bias_layer;
+		*(this->biases + i - 1) = *bias_layer;
 	}
 
 	// Instantiate weight vectors
@@ -44,30 +40,42 @@ class Network {
 			for (int k = 0; k < layer_1; k++) {
 				gsl_matrix_set(weight_layer, k, j, gsl_rng_uniform_pos(rng)); 
 			}
-			*(weights + i) = *weight_layer; 
+		*(this->weights + i) = *weight_layer; 
 		}
 	}
-	gsl_rng_free(rng); 
+	// `gsl_rng_free(rng); 
 	}
 
 	/**~Network () 
 	{
 
 	}*/
-	void print_biases(); 
 
-};
+	void print_biases(void){
+	
+		std::cout << num_layers << "\n"; 
+		std::cout << "cout\n"; 
+		for(int j = 0; j < num_layers - 1; j++) {
+			for (int i = 0; i < 3; i++) {
+				std::cout << gsl_vector_get(&biases[j], i) << "\n";
+			}
+		}
+		std::cout << "fprintf\n"; 
+		gsl_vector_fprintf(stdout, biases, "%f"); //astd::cout << *(this->biases) << "\n"; 
+		gsl_vector_fprintf(stdout, &biases[1], "%f"); //astd::cout << *(this->biases) << "\n"; 
 
-void Network::print_biases(){
-
-	std::cout << num_layers << "\n"; 
+	}
 };
 
 int main(int argc, char *argv[]) {
-	int layers[3] = {5, 10, 1}; 
-	
-	Network net = Network(layers, 3); 
-	net.print_biases(); 
+	int* layers = (int* ) malloc(sizeof(int) *3); // 
+	*layers = 5; 
+	*(layers + 1) = 12; 
+	*(layers + 2) = 3; 
+
+
+	Network *net = new Network(layers, 3); 
+	net->print_biases(); 
 		
 }
 
