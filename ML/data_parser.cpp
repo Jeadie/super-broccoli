@@ -42,14 +42,13 @@ gsl_matrix_uchar* Get_Number_Images(FILE *file) {
 	int32_t count = 60000; //bytes_to_int32_t (b_count); 
 	int32_t columns = bytes_to_int32_t (b_columns); 
 	fprintf(stdout, "rows %d\n columns %d\n count %d\n", rows, columns, count); 
-	gsl_matrix_uchar * images; 
+	gsl_matrix_uchar images[count]; //  = (gsl_matrix_uchar *) malloc(sizeof(gsl; 
 	for (int32_t i = 0; i < count; i++) {
 		gsl_matrix_uchar* image = gsl_matrix_uchar_calloc(rows, columns); 
 		if (gsl_matrix_uchar_fread(file, image) != 0) {
 			fprintf(stdout, "Error reading image from file."); 
 			return (gsl_matrix_uchar* ) 0; 
 		}; 
-		fprintf(stdout, "%d\n", i); // gsl_matrix_uchar_fprintf(stdout, image, "%d"); 
 		images[i] = *image; 
 	}
 	return images; 
@@ -70,14 +69,12 @@ gsl_vector_uchar* Get_Number_Labels(FILE *file) {
 	char byte_type = label_header[2]; 
 	int vector_dimension = label_header[3]; 
 	//TODO: fix to parsing the 4 bytes 
-	int32_t  label_count = 60000; //((int32_t) label_header[4] << 24) |  ((int32_t) label_header[5] << 16) |  ((int32_t) label_header[6] << 8) |  ((int32_t) label_header[7]); 
+	int32_t  label_count = 60000;  
 
-//	fprintf(stdout, "count: %u %u %u %u %u %u %u %u",  label_header[6], label_header[1], label_header[2], label_header[3], label_header[4], label_header[5], label_header[6], label_header[7]);
 	fflush(stdout); 
 	gsl_vector_uchar* labels = gsl_vector_uchar_alloc(label_count); 
 	for (int32_t i = 0; i < label_count; i++) {
 		unsigned char byte = fgetc(file); 
-		//fprintf(stdout, "%c\n", byte); 
 		gsl_vector_uchar_set(labels, i, byte);  
 	}
 	return labels; 
@@ -100,7 +97,7 @@ number_image_pairs* Get_Number_Images_From_Idx(char* image_path, char* label_pat
 	number_image_pairs *pairs = (number_image_pairs*) malloc(sizeof(number_image_pairs));	 
 	pairs->images = Get_Number_Images(image_file); 
 	pairs->labels = Get_Number_Labels(label_file); 
-	pairs->count = 10; //pairs->labels->size;		
+	pairs->count = pairs->labels->size;		
 	//gsl_vector_uchar_fprintf(stdout, pairs->labels, "%d"); 
 	if(pairs->images == 0 || pairs->labels == 0) {
 		//TODO: Properly free non complete inner data structures

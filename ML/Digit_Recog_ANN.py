@@ -98,9 +98,10 @@ class Network(object):
             activation = sigmoid(z)
             activations.append(activation)
         # backward pass
-        delta = self.cost_derivative(activations[-1], y) * \
-            sigmoid_prime(zs[-1])
+        delta = self.cost_derivative(activations[-1], y) *  sigmoid_prime(zs[-1])
         nabla_b[-1] = delta
+        temp = np.dot(delta, activations[-2].transpose())
+        print("I am temp with size {} and act {} delta {}".format(temp.shape, activations[-2].shape,  delta.shape))
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # Note that the variable l in the loop below is used a little
         # differently to the notation in Chapter 2 of the book.  Here,
@@ -115,6 +116,8 @@ class Network(object):
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)
+
+	
 
     def evaluate(self, test_data):
         """Return the number of test inputs for which the neural
