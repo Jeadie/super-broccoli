@@ -7,18 +7,13 @@
 #include "linear_regression.h"
 using namespace std;
 
-LinearRegression::LinearRegression() {}
-LinearRegression::~LinearRegression() {}
+LinearRegression::~LinearRegression() {
+	gsl_vector_free(this->get_weight_vector()); 
+}
+
 LinearRegression::LinearRegression(gsl_vector* x_vals, gsl_vector* r_vals, int count){
-		/**
-		 * Sets up the linear regression model from the given supervised data. 
-		 * x_vals: input variable such that each vector has equal dimensions. 
-		 * r_vals: corresponding outputs for each x_val at corresponding index. 
-		 * count: Number of datapoints to build the regression model with.
-		 */ 
-		
 		// init linear weights vector (constant term and each feature)
-		this->w1 = gsl_vector_calloc(x_vals->size +1); 
+		this->set_weight_vector(gsl_vector_calloc(x_vals->size +1)); 
 		
 		// Construct normal equations: X^tXw = X^tr
 		// Construct initial matrix of one extra column for constant term with enough rows for each datapoint. 
@@ -47,7 +42,7 @@ LinearRegression::LinearRegression(gsl_vector* x_vals, gsl_vector* r_vals, int c
 		gsl_blas_dgemv(CblasTrans, 1.0, X, r_vals, 0.0, X_TR); 
 
 		// Calculate weights = inv(XT x X) x (XT x R)  
-		gsl_blas_dgemv(CblasNoTrans, 1.0, inv_X_TX, X_TR, 0.0, this->w1); 
+		gsl_blas_dgemv(CblasNoTrans, 1.0, inv_X_TX, X_TR, 0.0, this->get_weight_vector());
 
 		// Memory Cleanup
 		gsl_matrix_free(X); 
@@ -58,23 +53,23 @@ LinearRegression::LinearRegression(gsl_vector* x_vals, gsl_vector* r_vals, int c
 	}
 
 	double LinearRegression::regress(gsl_vector* x) {
-		/**
-		 * Returns the output value from the linear regression model at point x. 
-		 */ 
 		gsl_vector* x_with_constant_term = this->construct_standard_linear_input(x); 
 		double y = 0; 
-		gsl_blas_ddot(this->w1, x_with_constant_term, &y); 
+		gsl_blas_ddot(this->get_weight_vector(), x_with_constant_term, &y); 
 		gsl_vector_free(x_with_constant_term); 
 		return y; 
 	}
 	
+	gsl_vector* LinearRegression::get_weight_vector(){
+		return this->weights; 
+	}
+
+	void LinearRegression::set_weight_vector(gsl_vector* weights) {
+		this->weights = weights; 
+	}
 
 
 	gsl_vector* LinearRegression::construct_standard_linear_input(gsl_vector* inputs) {
-		/**
-		 * Returns a vector, v such that v[0] = 1 & v[i] = inputs[i-1] for all i > 0. 
-		 */
-		
 		// Create extended vector to account for constant term. 
 		gsl_vector* constant_termed_vector = gsl_vector_alloc(inputs->size +1); 
 		
