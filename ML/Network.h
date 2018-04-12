@@ -53,7 +53,7 @@ public:
 		 */
      
 
-    uint32_t evaluate(gsl_vector* test_input, int count, gsl_vector* expected_output);
+    uint32_t evaluate(gsl_vector* test_input, uint32_t count, gsl_vector* expected_output);
         /**
 		 * Return the number of test inputs for which the neural
          * network outputs the correct result. Note that the neural

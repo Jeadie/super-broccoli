@@ -3,13 +3,12 @@
 #include <gsl/gsl_blas.h> 
 
 gsl_vector* matrix_vector_dot(gsl_vector* a, gsl_matrix* w) {
-	gsl_vector* temp_vect = gsl_vector_alloc(w->size2); 
-		
-	for(uint8_t i = 0; i < w->size2; i++ ) {
-		double* dot_value; 
-		gsl_vector x = gsl_matrix_column(w, i).vector;  
-		gsl_blas_ddot(a, &x, dot_value); 
-		gsl_vector_set(temp_vect, i, *dot_value);
+	gsl_vector* temp_vect = gsl_vector_alloc(w->size1); 
+	for(uint8_t i = 0; i < w->size1; i++ ) {
+		double dot_value = 0;  
+		gsl_vector x = gsl_matrix_row(w, i).vector;  
+		gsl_blas_ddot(a, &x, &dot_value); 
+		gsl_vector_set(temp_vect, i, dot_value);
 	}	
 	return temp_vect; 
 }
